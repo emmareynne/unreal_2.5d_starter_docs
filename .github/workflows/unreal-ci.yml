@@ -1,0 +1,44 @@
+name: Unreal Engine CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Unreal Tests
+    runs-on: self-hosted
+    
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Run Automation Tests
+      shell: cmd
+      run: |
+        "C:/Program Files/Epic Games/UE_5.3/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" "${{ github.workspace }}/PlatformerGame.uproject" -ExecCmds="Automation RunTests Platformer.Tests;Quit" -TestExit="Automation Test Queue Empty" -Unattended -NullRHI -Log
+      
+  build:
+    name: Package Game
+    needs: test
+    runs-on: self-hosted
+    
+    steps:
+    - uses: actions/checkout@v2
+      if: github.event_name != 'pull_request'
+      
+    - name: Package Game
+      if: github.event_name != 'pull_request'
+      shell: cmd
+      run: |
+        "C:/Program Files/Epic Games/UE_5.3/Engine/Build/BatchFiles/RunUAT.bat" BuildCookRun -project="${{ github.workspace }}/PlatformerGame.uproject" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -build -stage -pak -archive -archivedirectory="${{ github.workspace }}/Build"
+        
+    - name: Upload Build Artifact
+      if: github.event_name != 'pull_request'
+      uses: actions/upload-artifact@v2
+      with:
+        name: PlatformerGame-Windows
+        path: ${{ github.workspace }}/Build
+        retention-days: 7 
