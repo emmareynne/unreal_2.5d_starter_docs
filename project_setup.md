@@ -21,36 +21,7 @@
 
 **SUCCESS CHECK:** All plugins enabled without errors, project recompiles successfully
 
-## Step 3: Set Up Perforce Version Control
-1. Close Unreal Editor
-2. [Download and install Perforce P4](https://www.perforce.com/downloads/helix-core-p4d) (free for up to 5 users)
-3. Create a new [Perforce depot](https://www.perforce.com/manuals/p4guide/Content/P4Guide/basic-concepts.html):
-   ```
-   p4 depot [YourGameName]
-   ```
-4. Create a [workspace](https://www.perforce.com/manuals/p4guide/Content/P4Guide/views.clients.html):
-   ```
-   p4 client [WorkspaceName]
-   ```
-5. Navigate to your project folder and add files:
-   ```
-   p4 add ...
-   p4 submit -d "Initial project setup"
-   ```
-6. Add [.p4ignore file](https://www.perforce.com/manuals/p4guide/Content/P4Guide/p4ignore.html) for Unreal-specific files
-
-**SUCCESS CHECK:** Perforce repository initialized with initial submit
-
-## Step 4: Configure Unreal for Perforce
-1. Launch Unreal Editor
-2. Go to Edit → Project Settings → [Source Control](https://docs.unrealengine.com/5.3/en-US/using-perforce-as-source-control-for-unreal-engine/)
-3. Select Perforce as your provider
-4. Enter your workspace name and server information
-5. Click "Accept Settings"
-
-**SUCCESS CHECK:** Source Control status shows "Connected to Perforce" in bottom right corner
-
-## Step 5: Create Basic Folder Structure
+## Step 3: Create Basic Folder Structure
 1. In Content Browser, right-click → New Folder
 2. Create these folders according to [best practices](https://docs.unrealengine.com/5.3/en-US/unreal-engine-directory-structure-reference/):
    - Blueprints
@@ -64,7 +35,10 @@
 
 **SUCCESS CHECK:** Folder structure visible in Content Browser
 
-## Step 6: Configure Project Settings for 2.5D
+## Step 4: Set Up Git LFS Version Control
+See VCS doc. you should use Git lfs and project borealis.
+
+## Step 5: Configure Project Settings for 2.5D
 1. Go to Edit → Project Settings
 2. Under "Project → Maps & Modes":
    - Set Default GameMode to a new custom GameMode (we'll create this)
@@ -78,7 +52,7 @@
 
 **SUCCESS CHECK:** Project settings saved without errors
 
-## Step 7: Configure Camera for 2.5D View
+## Step 6: Configure Camera for 2.5D View
 1. Create a basic test level
 2. Add a floor plane and some test platforms
 3. Place your character in the level
@@ -91,7 +65,7 @@
 
 **SUCCESS CHECK:** Camera provides a proper side-scrolling view of the 2.5D environment
 
-## Step 8: Test Basic Movement Constraints
+## Step 7: Test Basic Movement Constraints
 1. Open your character blueprint
 2. Add a Plane Constraint component if not already present
 3. Set the constraint normal to (0,1,0) to lock Y-axis movement
@@ -99,7 +73,7 @@
 
 **SUCCESS CHECK:** Character movement is constrained to the 2.5D plane
 
-## Step 9: Set Up Testing Framework
+## Step 8: Set Up Testing Framework
 1. Create a "Tests" folder in your project structure:
    - Create "Source/[YourGameName]/Tests" for C++ tests
    - Create "Content/Tests" for Blueprint Functional Tests
@@ -120,6 +94,7 @@
 Once complete, move on to setting up a more comprehensive version control workflow as outlined in `version_control.md`.
 
 ## Resources
-- [Perforce and Unreal Integration Guide](https://www.perforce.com/integrations/perforce-and-unreal-integration)
-- [Using Perforce as Source Control in UE](https://docs.unrealengine.com/5.3/en-US/using-perforce-as-source-control-for-unreal-engine/)
+- [Git LFS Documentation](https://git-lfs.github.com/)
+- [Project Borealis GitHub](https://github.com/ProjectBorealis/PBCharacterMovement)
+- [Unreal Engine Git Integration](https://docs.unrealengine.com/5.3/en-US/using-git-source-control-with-unreal-engine/)
 - [Unreal Engine Project Structure Best Practices](https://docs.unrealengine.com/5.3/en-US/unreal-engine-directory-structure-reference/) 

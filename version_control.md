@@ -1,4 +1,5 @@
 # Git LFS Version Control for Unreal Engine
+(temporarily deprecated.. need to wait for project borealis to be updated, but ideally a gitlfs + project borealis implementation is best for this)
 
 ## Prerequisites
 - Completed steps in project_setup.md
@@ -22,40 +23,78 @@
    ```
 
 3. **Configure Git LFS tracking** for Unreal Engine:
+   Add to .gitattributes that was created after lfs install.
+
    ```bash
-   git lfs track "*.uasset"
-   git lfs track "*.umap"
-   git lfs track "*.fbx"
-   git lfs track "*.png"
-   git lfs track "*.jpg"
-   git lfs track "*.wav"
-   git lfs track "*.mp3"
-   git lfs track "*.mp4"
+   # Unreal Engine file types.
+   *.uasset filter=lfs diff=lfs merge=lfs -text
+   *.umap filter=lfs diff=lfs merge=lfs -text
+   *.uexp filter=lfs diff=lfs merge=lfs -text
+   *.ubulk filter=lfs diff=lfs merge=lfs -text
+
+   # Raw Content file types.
+   *.fbx filter=lfs diff=lfs merge=lfs -text
+   *.3ds filter=lfs diff=lfs merge=lfs -text
+   *.psd filter=lfs diff=lfs merge=lfs -text
+   *.png filter=lfs diff=lfs merge=lfs -text
+   *.mp3 filter=lfs diff=lfs merge=lfs -text
+   *.wav filter=lfs diff=lfs merge=lfs -text
+   *.xcf filter=lfs diff=lfs merge=lfs -text
+   *.jpg filter=lfs diff=lfs merge=lfs -text
+   *.jpeg filter=lfs diff=lfs merge=lfs -text
+   *.gif filter=lfs diff=lfs merge=lfs -text
+   *.bmp filter=lfs diff=lfs merge=lfs -text
+   *.tga filter=lfs diff=lfs merge=lfs -text
+   *.tiff filter=lfs diff=lfs merge=lfs -text
+
+   # Anything in `/RawContent` dir.
+   /RawContent/**/* filter=lfs diff=lfs merge=lfs -text
    ```
 
 4. **Create a `.gitignore` file** for Unreal-specific files:
    ```
-   # Unreal Engine
+   # Unreal Generated Files
    Saved/
    Intermediate/
    DerivedDataCache/
    Build/
    Binaries/
-   *.pdb
-   *.vspscc
-   
-   # IDE files
+
+   # Visual Studio Files
    .vs/
    .vscode/
    *.sln
    *.suo
+   *.opensdf
+   *.sdf
+   *.VC.db
+   *.VC.opendb
+   *.vspscc
+   *.vsp
+   *.vspx
+   *.user
+   ipch/
    
-   # OS files
+   # Compiled source files 
+   *.pdb
+   *.obj
+   
+   # OS generated files
    .DS_Store
+   .DS_Store?
+   ._*
+   .Spotlight-V100
+   .Trashes
+   Icon?
+   ehthumbs.db
    Thumbs.db
+   
+   # Builds
+   *.apk
+   *.ipa
    ```
 
-### Repository Setup
+### Repository Setup (Project Borealis Style)
 
 1. **Initialize the Repository**:
    ```bash
@@ -67,12 +106,13 @@
 2. **Connect to Remote Repository**:
    ```bash
    git remote add origin https://github.com/username/your-game-name.git
+   git branch -M main
    git push -u origin main
    ```
 
 3. **Initial Commit**:
    ```bash
-   cd [ProjectDirectory]
+   # Add your project files
    git add .
    git commit -m "Initial project setup"
    git push
@@ -82,17 +122,18 @@
 
 1. **Configure Unreal Editor**:
    - Go to Edit → Project Settings → Source Control
-   - Select Git as provider (or Git LFS if available)
+   - Set Source Control Login to:
+     - Provider: Git (if available) or "None" (use Git outside the editor)
+     - Username: Your Git username
+     - Email: Your Git email
    - Enter your working directory path
-   - Test the connection
+   - Click "Accept Settings"
 
-2. **Enable File Locking with Git LFS**:
-   - Add the following to .gitattributes to enable file locking:
-   ```
-   *.uasset filter=lfs diff=lfs merge=lfs -text lockable
-   *.umap filter=lfs diff=lfs merge=lfs -text lockable
-   ```
-   - This is critical for Unreal binary assets to prevent conflicts
+2. **File Locking Strategy** (Project Borealis approach):
+   - Project Borealis doesn't use Git LFS file locking
+   - Instead, they rely on team communication and coordination
+   - For larger teams, consider establishing a check-out protocol via communication channels
+   - For solo developers, locking isn't necessary
 
 ## Recommended Branching Strategy
 
@@ -126,27 +167,25 @@ Git Flow is recommended for Unreal Engine projects:
    - Command line: `git pull`
    - Always pull before starting new work
 
-2. **Locking Binary Files** (if using lockable files):
-   - Command line: `git lfs lock path/to/file.uasset`
-   - Prevents others from modifying the same file
-
-3. **Unlocking Files** when done:
-   - Command line: `git lfs unlock path/to/file.uasset`
-   - Always unlock files when you're done editing them
-
-4. **Adding New Files**:
+2. **Adding New Files**:
    - In Unreal Editor: New files are detected automatically
    - Command line: `git add [filename]`
+   - For new binary file types, ensure they're tracked in .gitattributes
 
-5. **Committing Changes**:
+3. **Committing Changes**:
    - Command line: `git commit -m "Description of changes"`
+   - Follow Project Borealis commit message format:
+     ```
+     [Type] Description of change
+     ```
 
-6. **Pushing Changes**:
+4. **Pushing Changes**:
    - Command line: `git push`
+   - If bandwidth is an issue, consider using `git push --no-verify`
 
-7. **Resolving Conflicts**:
+5. **Resolving Conflicts**:
    - For text conflicts: Standard Git conflict resolution
-   - For binary conflicts: Use file locking to avoid them
+   - For binary conflicts: Choose which version to keep or merge manually
    - For complex conflicts: Consider tools like [Beyond Compare](https://www.scootersoftware.com/)
 
 ### Branch Management
@@ -185,24 +224,19 @@ Git Flow is recommended for Unreal Engine projects:
    - Smaller, focused commits are preferable
    - At least daily commits
 
-2. **Description Format**:
+2. **Description Format** (Project Borealis style):
    ```
-   [Type] Short summary (50 chars or less)
-
-   Detailed explanation if necessary. Wrap at 72 chars.
-   Include motivation for change and differences from previous behavior.
-
-   Reviewers: @username
-   Task: TASK-123
+   [Type] Short summary
    ```
-
-3. **Types of Changes**:
-   - [Feature] - New functionality
-   - [Fix] - Bug fixes
-   - [Refactor] - Code changes that don't add features or fix bugs
-   - [Perf] - Performance improvements
-   - [Style] - Code style/formatting changes
-   - [Asset] - Adding or modifying game assets
+   
+   Where Type is one of:
+   - Feature - New functionality
+   - Fix - Bug fixes
+   - Refactor - Code changes that don't add features or fix bugs
+   - Perf - Performance improvements
+   - Style - Code style/formatting changes
+   - Asset - Adding or modifying game assets
+   - Doc - Documentation changes
 
 ## Unreal-Specific Workflows
 
@@ -224,10 +258,10 @@ Git Flow is recommended for Unreal Engine projects:
    - T_ for Textures
    - WBP_ for Widget Blueprints
 
-3. **File Locking Workflow**:
-   - Lock binary assets before editing
-   - Commit and unlock promptly when done
-   - Communicate with team when working on important assets
+3. **Binary Asset Workflow**:
+   - Communicate with team members before making large changes
+   - Consider using a "RawContent" folder for original art assets (PSD, etc.)
+   - Use Unreal's Asset Browser to track what you're working on
 
 ### Managing Large Binary Files
 
@@ -235,6 +269,7 @@ Git Flow is recommended for Unreal Engine projects:
    - Be mindful of the free tier limits (1-5GB depending on service)
    - Consider referencing external assets when possible
    - Use Asset Packs judiciously
+   - Consider texture compression before committing
 
 2. **Git LFS Maintenance**:
    ```bash
@@ -249,6 +284,7 @@ Git Flow is recommended for Unreal Engine projects:
 1. **Create Pull Requests**:
    - Push your feature branch to the remote repository
    - Create a pull request from the feature branch to develop
+   - Include before/after screenshots for visual changes
 
 2. **Review Process**:
    - Assign reviewers
@@ -256,23 +292,29 @@ Git Flow is recommended for Unreal Engine projects:
    - Request updates if needed
    - Approve and merge when ready
 
-### Handling Large Projects
+### Project Borealis Collaboration Tips
 
-1. **Component-Based Development**:
+1. **Communication First**:
+   - Announce major asset changes in team chat
+   - Discuss large refactors before implementing
+   - Document design decisions
+
+2. **Handling Large Projects**:
    - Split large projects into components
    - Consider Git submodules for shared components
-   - Use sparse checkout for working on specific parts
+   - Use shallow clones for faster initial downloads
 
-2. **Optimizing Performance**:
+3. **Performance Optimization**:
    - Use shallow clones for faster initial downloads
    - Consider Git LFS partial clones
-   - Use bfg-repo-cleaner for reducing repository size if needed
+   - Use `git lfs fetch --recent` to get only recent assets
 
 ## Backup and Recovery
 
 1. **Regular Backups**:
    - Set up repository mirroring to another service
    - Consider Git Bundle files for offline backups
+   - Use `git clone --mirror` for full backups including refs
 
 2. **Disaster Recovery Plan**:
    - Document recovery procedures

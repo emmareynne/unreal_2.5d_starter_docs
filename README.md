@@ -7,17 +7,18 @@ This repository contains a comprehensive guide to implementing a 2.5D platformer
 1. **[Project Setup](project_setup.md)**
    - Initial project creation
    - Required plugins
-   - Perforce version control setup
+   - Git LFS version control setup
    - Folder structure
    - Project settings
 
 2. **[Version Control](version_control.md)**
-   - Perforce setup for Unreal Engine
-   - Stream strategy
-   - Submit best practices
+   - Git LFS setup for Unreal Engine
+   - Project Borealis style configuration
+   - Branching strategy
+   - Commit best practices
    - Unreal-specific considerations
    - Collaborative workflows
-   - File locking and management
+   - Binary file management
 
 3. **[Core Framework](core_framework.md)**
    - Game instance
@@ -190,7 +191,7 @@ This ensures that all code changes are tested before building, and provides a do
 
 1. **Setup Your Project Environment**
    - Follow [project_setup.md](project_setup.md) to create your initial project
-   - Configure Perforce for version control
+   - Configure Git LFS for version control
    - Set up the self-hosted runner for CI/CD
 
 2. **Implement Core Character Movement**
