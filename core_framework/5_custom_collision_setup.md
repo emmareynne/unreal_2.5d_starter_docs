@@ -27,74 +27,338 @@ By creating custom collision channels, we can:
 
    | Name | Default Response | Description |
    |------|------------------|-------------|
-   | Player | Block | Traces from the player character |
-   | Enemy | Block | Traces from enemy characters |
-   | Projectile | Block | Traces from projectiles |
-   | Interaction | Ignore | Traces for interactive objects |
+   | PlayerTrace | Block | Traces from the player character |
+   | EnemyTrace | Block | Traces from enemy characters |
+   | ProjectileTrace | Block | Traces from projectiles |
+   | InteractionTrace | Ignore | Traces for interactive objects |
    | PlatformerGroundTrace | Block | Ground detection for platformer movement |
-   | ThinPlatform | Overlap | One-way platforms the player can jump through |
+   | ThinPlatformTrace | Overlap | One-way platforms the player can jump through |
 
 4. Under **Object Channels**, add the following:
 
    | Name | Default Response | Description |
    |------|------------------|-------------|
-   | Player | Block | Player character collisions |
-   | Enemy | Block | Enemy character collisions |
-   | Projectile | Block | Projectile collisions |
-   | Pickup | Overlap | Collectible items |
-   | ThinPlatform | Overlap | One-way platforms |
-   | Hazard | Overlap | Damaging hazards |
+   | PlayerObject | Block | Player character collisions |
+   | EnemyObject | Block | Enemy character collisions |
+   | ProjectileObject | Block | Projectile collisions |
+   | PickupObject | Overlap | Collectible items |
+   | ThinPlatformObject | Overlap | One-way platforms |
+   | HazardObject | Overlap | Damaging hazards |
    | BackgroundObject | Ignore | Visual-only background elements |
 
 ### Step 2: Create Custom Collision Presets
 
-Configure these presets for commonly used object types:
+Configure these presets for commonly used object types. In Unreal Engine 5.5, you'll need to set collision responses for both built-in channels and your custom channels.
 
-1. **Platformer_Player**
-   - Default: Block
-   - Player: Ignore (don't collide with self)
-   - Pickup: Overlap
-   - Interaction: Overlap
-   - BackgroundObject: Ignore
-   - ThinPlatform: Custom (special handling)
-   - Hazard: Overlap
+To create a new collision preset:
+1. Navigate to **Edit → Project Settings → Engine → Collision**
+2. Scroll to the **Preset** section and click **New**
+3. Name your preset according to the profiles below
+4. Configure trace and object responses as outlined below
 
-2. **Platformer_Enemy**
-   - Default: Block
-   - Enemy: Block
-   - Player: Block
-   - Projectile: Block
-   - Pickup: Ignore
-   - BackgroundObject: Ignore
-   - ThinPlatform: Block
+#### 1. Platformer_Player Preset
 
-3. **Platformer_Projectile**
-   - Default: Block
-   - Projectile: Ignore (don't collide with other projectiles)
-   - Player: Custom (depends on friendly fire settings)
-   - Enemy: Block
-   - Pickup: Ignore
-   - BackgroundObject: Ignore
-   - ThinPlatform: Ignore (pass through thin platforms)
+This is for the player character in your platformer:
 
-4. **Platformer_ThinPlatform**
-   - Default: Ignore
-   - Player: Custom (special handling)
-   - Enemy: Block
-   - Projectile: Ignore
-   - ThinPlatform: Ignore (don't collide with other platforms)
+**Basic Settings:**
+- Name: Platformer_Player
+- CollisionEnabled: Query and Physics
+- ObjectType: PlayerObject
+- Description: Player character collision profile
 
-5. **Platformer_Pickup**
-   - Default: Ignore
-   - Player: Overlap
-   - Enemy: Ignore
-   - Projectile: Ignore
-   - BackgroundObject: Ignore
+**Collision Responses:**
 
-6. **Platformer_BackgroundObject**
-   - Default: Ignore (purely visual)
-   - BlockAllDynamic: Ignore
-   - All custom channels: Ignore
+*Built-in Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| Visibility | Block |
+| Camera | Block |
+| WorldStatic | Block |
+| WorldDynamic | Block |
+| Pawn | Block |
+| PhysicsBody | Block |
+| Vehicle | Block |
+| Destructible | Block |
+
+*Custom Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerTrace | Ignore |
+| EnemyTrace | Block |
+| ProjectileTrace | Block |
+| InteractionTrace | Overlap |
+| PlatformerGroundTrace | Block |
+| ThinPlatformTrace | Overlap |
+
+*Built-in Object Channels:*
+| Channel | Response |
+|---------|----------|
+| WorldStatic | Block |
+| WorldDynamic | Block |
+| Pawn | Block |
+| PhysicsBody | Block |
+| Vehicle | Block |
+| Destructible | Block |
+
+*Custom Object Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerObject | Ignore |
+| EnemyObject | Block |
+| ProjectileObject | Block |
+| PickupObject | Overlap |
+| ThinPlatformObject | Overlap |
+| HazardObject | Overlap |
+| BackgroundObject | Ignore |
+
+#### 2. Platformer_Enemy Preset
+
+For enemy characters:
+
+**Basic Settings:**
+- Name: Platformer_Enemy
+- CollisionEnabled: Query and Physics
+- ObjectType: EnemyObject
+- Description: Enemy character collision profile
+
+**Collision Responses:**
+
+*Built-in Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| Visibility | Block |
+| Camera | Block |
+| WorldStatic | Block |
+| WorldDynamic | Block |
+| Pawn | Block |
+| PhysicsBody | Block |
+| Vehicle | Block |
+| Destructible | Block |
+
+*Custom Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerTrace | Block |
+| EnemyTrace | Ignore |
+| ProjectileTrace | Block |
+| InteractionTrace | Ignore |
+| PlatformerGroundTrace | Block |
+| ThinPlatformTrace | Block |
+
+*Built-in Object Channels:*
+| Channel | Response |
+|---------|----------|
+| WorldStatic | Block |
+| WorldDynamic | Block |
+| Pawn | Block |
+| PhysicsBody | Block |
+| Vehicle | Block |
+| Destructible | Block |
+
+*Custom Object Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerObject | Block |
+| EnemyObject | Block |
+| ProjectileObject | Block |
+| PickupObject | Ignore |
+| ThinPlatformObject | Block |
+| HazardObject | Ignore |
+| BackgroundObject | Ignore |
+
+#### 3. Platformer_Projectile Preset
+
+For projectiles like bullets, fireballs, etc.:
+
+**Basic Settings:**
+- Name: Platformer_Projectile
+- CollisionEnabled: Query and Physics
+- ObjectType: ProjectileObject
+- Description: Projectile collision profile
+
+**Collision Responses:**
+
+*Built-in Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| Visibility | Block |
+| Camera | Ignore |
+| WorldStatic | Block |
+| WorldDynamic | Block |
+| Pawn | Block |
+| PhysicsBody | Block |
+| Vehicle | Block |
+| Destructible | Block |
+
+*Custom Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerTrace | Block |
+| EnemyTrace | Block |
+| ProjectileTrace | Ignore |
+| InteractionTrace | Ignore |
+| PlatformerGroundTrace | Block |
+| ThinPlatformTrace | Ignore |
+
+*Built-in Object Channels:*
+| Channel | Response |
+|---------|----------|
+| WorldStatic | Block |
+| WorldDynamic | Block |
+| Pawn | Block |
+| PhysicsBody | Block |
+| Vehicle | Block |
+| Destructible | Block |
+
+*Custom Object Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerObject | Custom (configurable for friendly fire) |
+| EnemyObject | Block |
+| ProjectileObject | Ignore |
+| PickupObject | Ignore |
+| ThinPlatformObject | Ignore |
+| HazardObject | Ignore |
+| BackgroundObject | Ignore |
+
+#### 4. Platformer_ThinPlatform Preset
+
+For one-way platforms that players can jump through:
+
+**Basic Settings:**
+- Name: Platformer_ThinPlatform
+- CollisionEnabled: Query and Physics
+- ObjectType: ThinPlatformObject
+- Description: One-way platform collision profile
+
+**Collision Responses:**
+
+*Built-in Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| Visibility | Block |
+| Camera | Ignore |
+| WorldStatic | Ignore |
+| WorldDynamic | Ignore |
+| Pawn | Ignore |
+| PhysicsBody | Ignore |
+| Vehicle | Ignore |
+| Destructible | Ignore |
+
+*Custom Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerTrace | Block |
+| EnemyTrace | Block |
+| ProjectileTrace | Ignore |
+| InteractionTrace | Ignore |
+| PlatformerGroundTrace | Block |
+| ThinPlatformTrace | Overlap |
+
+*Built-in Object Channels:*
+| Channel | Response |
+|---------|----------|
+| WorldStatic | Ignore |
+| WorldDynamic | Ignore |
+| Pawn | Ignore |
+| PhysicsBody | Ignore |
+| Vehicle | Ignore |
+| Destructible | Ignore |
+
+*Custom Object Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerObject | Overlap |
+| EnemyObject | Block |
+| ProjectileObject | Ignore |
+| PickupObject | Ignore |
+| ThinPlatformObject | Ignore |
+| HazardObject | Ignore |
+| BackgroundObject | Ignore |
+
+#### 5. Platformer_Pickup Preset
+
+For collectible items:
+
+**Basic Settings:**
+- Name: Platformer_Pickup
+- CollisionEnabled: Query Only
+- ObjectType: PickupObject
+- Description: Collectible item collision profile
+
+**Collision Responses:**
+
+*Built-in Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| Visibility | Block |
+| Camera | Ignore |
+| WorldStatic | Ignore |
+| WorldDynamic | Ignore |
+| Pawn | Ignore |
+| PhysicsBody | Ignore |
+| Vehicle | Ignore |
+| Destructible | Ignore |
+
+*Custom Trace Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerTrace | Overlap |
+| EnemyTrace | Ignore |
+| ProjectileTrace | Ignore |
+| InteractionTrace | Overlap |
+| PlatformerGroundTrace | Ignore |
+| ThinPlatformTrace | Ignore |
+
+*Built-in Object Channels:*
+| Channel | Response |
+|---------|----------|
+| WorldStatic | Ignore |
+| WorldDynamic | Ignore |
+| Pawn | Ignore |
+| PhysicsBody | Ignore |
+| Vehicle | Ignore |
+| Destructible | Ignore |
+
+*Custom Object Channels:*
+| Channel | Response |
+|---------|----------|
+| PlayerObject | Overlap |
+| EnemyObject | Ignore |
+| ProjectileObject | Ignore |
+| PickupObject | Ignore |
+| ThinPlatformObject | Ignore |
+| HazardObject | Ignore |
+| BackgroundObject | Ignore |
+
+#### 6. Platformer_BackgroundObject Preset
+
+For purely visual, non-interactive elements:
+
+**Basic Settings:**
+- Name: Platformer_BackgroundObject
+- CollisionEnabled: No Collision
+- ObjectType: BackgroundObject
+- Description: Visual-only background element
+
+**Collision Responses:**
+
+*All Channels:*
+- Set to **Ignore** (though with No Collision enabled, these settings won't matter)
+
+### Step 3: Apply Presets to Objects
+
+Once you've created your presets, you can apply them to objects in your scene:
+
+1. Select the object in your scene
+2. In the Details panel, expand the **Collision** section
+3. Set **Collision Presets** to the appropriate preset from the dropdown
+
+For Blueprint classes, set the default collision preset in the class defaults:
+
+1. Open your Blueprint class
+2. In the Class Defaults, find the **Collision** section
+3. Set the appropriate collision preset
 
 ## Implementing One-Way Platforms
 
@@ -115,7 +379,7 @@ void UPlatformerCharacterMovement::PhysWalking(float deltaTime, int32 Iterations
         if (CurrentFloor.IsWalkableFloor() && 
             CurrentFloor.GetHitResult(FloorHit) && 
             FloorHit.GetComponent() && 
-            FloorHit.GetComponent()->GetCollisionObjectType() == ECC_GameTraceChannel5) // ThinPlatform channel
+            FloorHit.GetComponent()->GetCollisionObjectType() == ECC_GameTraceChannel5) // ThinPlatformObject channel
         {
             // Disable collision with thin platforms briefly
             TArray<AActor*> IgnoreActors;
@@ -125,7 +389,7 @@ void UPlatformerCharacterMovement::PhysWalking(float deltaTime, int32 Iterations
                 CharacterOwner->GetActorLocation(),
                 CharacterOwner->GetActorLocation() - FVector(0, 0, 50.0f),
                 CollisionShape.GetCapsuleRadius(),
-                { UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel5) }, // ThinPlatform
+                { UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel5) }, // ThinPlatformObject
                 false,
                 IgnoreActors,
                 EDrawDebugTrace::None,
@@ -137,7 +401,7 @@ void UPlatformerCharacterMovement::PhysWalking(float deltaTime, int32 Iterations
             {
                 // Set collision response to ignore for thin platforms
                 GetCharacterOwner()->MeshComponent->SetCollisionResponseToChannel(
-                    ECC_GameTraceChannel5, // ThinPlatform
+                    ECC_GameTraceChannel5, // ThinPlatformObject
                     ECR_Ignore
                 );
                 
@@ -170,7 +434,7 @@ void UPlatformerCharacterMovement::RestorePlatformCollision()
 {
     // Restore collision with thin platforms
     GetCharacterOwner()->MeshComponent->SetCollisionResponseToChannel(
-        ECC_GameTraceChannel5, // ThinPlatform
+        ECC_GameTraceChannel5, // ThinPlatformObject
         ECR_Block
     );
 }
@@ -194,7 +458,7 @@ void UPlayerAttackComponent::ExecuteAttack()
     // Only check for enemy collisions
     TArray<FOverlapResult> Overlaps;
     FCollisionObjectQueryParams ObjectParams;
-    ObjectParams.AddObjectTypesToQuery(ECC_GameTraceChannel2); // Enemy channel
+    ObjectParams.AddObjectTypesToQuery(ECC_GameTraceChannel2); // EnemyObject channel
     
     // Perform the overlap check
     if (GetWorld()->OverlapMultiByObjectType(
@@ -312,19 +576,19 @@ void UPlatformerDebugComponent::DrawCollisionSection()
     static bool bShowPlayerCollision = false;
     if (ImGui::Checkbox("Player Collisions", &bShowPlayerCollision))
     {
-        ToggleCollisionDisplay(ECC_GameTraceChannel1, bShowPlayerCollision); // Player channel
+        ToggleCollisionDisplay(ECC_GameTraceChannel1, bShowPlayerCollision); // PlayerObject channel
     }
     
     static bool bShowEnemyCollision = false;
     if (ImGui::Checkbox("Enemy Collisions", &bShowEnemyCollision))
     {
-        ToggleCollisionDisplay(ECC_GameTraceChannel2, bShowEnemyCollision); // Enemy channel
+        ToggleCollisionDisplay(ECC_GameTraceChannel2, bShowEnemyCollision); // EnemyObject channel
     }
     
     static bool bShowPlatformCollision = false;
     if (ImGui::Checkbox("Platform Collisions", &bShowPlatformCollision))
     {
-        ToggleCollisionDisplay(ECC_GameTraceChannel5, bShowPlatformCollision); // ThinPlatform channel
+        ToggleCollisionDisplay(ECC_GameTraceChannel5, bShowPlatformCollision); // ThinPlatformObject channel
     }
 }
 
@@ -372,15 +636,15 @@ To define your collision channels in C++:
 #include "Engine/Engine.h"
 
 // Custom collision channels
-#define COLLISION_PLAYER               ECC_GameTraceChannel1
-#define COLLISION_ENEMY                ECC_GameTraceChannel2
-#define COLLISION_PROJECTILE           ECC_GameTraceChannel3
-#define COLLISION_INTERACTION          ECC_GameTraceChannel4
-#define COLLISION_THIN_PLATFORM        ECC_GameTraceChannel5
-#define COLLISION_PLATFORMER_GROUND    ECC_GameTraceChannel6
-#define COLLISION_PICKUP               ECC_GameTraceChannel7
-#define COLLISION_HAZARD               ECC_GameTraceChannel8
-#define COLLISION_BACKGROUND_OBJECT    ECC_GameTraceChannel9
+#define COLLISION_PLAYER_OBJECT         ECC_GameTraceChannel1
+#define COLLISION_ENEMY_OBJECT          ECC_GameTraceChannel2
+#define COLLISION_PROJECTILE_OBJECT     ECC_GameTraceChannel3
+#define COLLISION_INTERACTION_TRACE     ECC_GameTraceChannel4
+#define COLLISION_THIN_PLATFORM_OBJECT  ECC_GameTraceChannel5
+#define COLLISION_GROUND_TRACE          ECC_GameTraceChannel6
+#define COLLISION_PICKUP_OBJECT         ECC_GameTraceChannel7
+#define COLLISION_HAZARD_OBJECT         ECC_GameTraceChannel8
+#define COLLISION_BACKGROUND_OBJECT     ECC_GameTraceChannel9
 
 // In YourGame.cpp
 void ConfigureCollisionChannels()
@@ -390,7 +654,7 @@ void ConfigureCollisionChannels()
     UCollisionProfile::RegisterChannelConfig(
         "PlatformerCollision",
         ECollisionChannel::ECC_GameTraceChannel1,
-        TEXT("Player"),
+        TEXT("PlayerObject"),
         true,   // Use for simulation
         true,   // Use for queries
         ECollisionResponse::ECR_Block
@@ -399,7 +663,7 @@ void ConfigureCollisionChannels()
     UCollisionProfile::RegisterChannelConfig(
         "PlatformerCollision",
         ECollisionChannel::ECC_GameTraceChannel2,
-        TEXT("Enemy"),
+        TEXT("EnemyObject"),
         true,
         true,
         ECollisionResponse::ECR_Block
