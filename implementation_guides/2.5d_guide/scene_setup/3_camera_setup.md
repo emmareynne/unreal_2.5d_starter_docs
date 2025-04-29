@@ -6,32 +6,34 @@ This document guides you through setting up a camera system specifically designe
 
 A well-configured camera is crucial for 2.5D platformer gameplay. Our approach uses a blend of side-scrolling perspective with depth perception to create a visually appealing experience while maintaining clear gameplay visibility.
 
-## Creating the Camera Manager
+## Creating a Game Mode Blueprint with Custom Camera Manager
 
-First, we'll create a custom Camera Manager to handle our specialized camera needs:
+Here's how to set up your camera manager properly:
 
-1. In the Content Browser, navigate to your project's core location:
-   - Create a folder structure: `Content/Blueprints/Camera`
+1. Create a Blueprint Class Based on Your C++ Game Mode:
+   - In Unreal Editor, go to the Content Browser
+   - Right-click in an empty area → Create Basic Asset → Blueprint Class
+   - In the "Pick Parent Class" window, search for "PlatformerGameMode" and select it
+   - Name your Blueprint something like "BP_PlatformerGameMode"
 
-2. Create a new Blueprint class:
-   - Right-click in the Content Browser and select **Blueprint Class**
-   - In the **All Classes** tab, search for and select `PlayerCameraManager`
-   - Name it `BP_PlatformerCameraManager`
+2. Set the Camera Manager in Your Game Mode Blueprint:
+   - Double-click your new BP_PlatformerGameMode to open it
+   - In the Class Defaults panel (right side), scroll down to find the Classes section
+   - Look for the property called "Player Camera Manager Class"
+   - Click the dropdown arrow and select your BP_PlayerCameraManager asset
 
-3. Open the Blueprint and configure basic settings:
-   - In the Class Defaults panel, set:
-     - Default FOV: 60.0
-     - Default Aspect Ratio: 1.777778 (16:9)
-     - View Pitch Min: -10.0 (slight downward angle)
-     - View Pitch Max: -10.0 (lock it to prevent rotation)
-     - View Yaw Min: 0.0 (looking perpendicular to the 2D plane)
-     - View Yaw Max: 0.0 (lock it to prevent rotation)
-
-4. Implement smooth camera following by adding variables:
-   - Add a Vector variable named `TargetOffset` (default: X=0, Y=400, Z=100)
-   - Add a Float variable named `CameraLagSpeed` (default: 5.0)
-   - Add a Float variable named `MinimumCameraDistance` (default: 300.0)
-
+3. Set Your Blueprint as the Default Game Mode:
+   - Option A: Project-wide Default
+     - Go to Edit → Project Settings
+     - In the left panel, find Maps & Modes
+     - Under Default Modes, find "Default GameMode"
+     - Set it to your new BP_PlatformerGameMode
+   - Option B: Level-specific Default
+     - Open your level
+     - Go to Window → World Settings
+     - Find "GameMode Override" at the top
+     - Set it to your new BP_PlatformerGameMode
+     
 ## Creating the Side-Scrolling Camera Component
 
 Next, we'll create a specialized Camera Component to attach to our character:
